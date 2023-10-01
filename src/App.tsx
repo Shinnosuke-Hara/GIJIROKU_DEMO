@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Box from "@mui/material/Box";
+import Seciton from "./components/Section";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
+import { useSpeechContext } from "./contexts/Speech.context";
+import useWebSpeechApi from "./hooks/useWebSpeechApi";
+import useOpenai from "./hooks/useOpenai";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { isRecording, setIsRecording, rawTexts, formattedTexts } =
+    useSpeechContext();
+
+  useWebSpeechApi();
+  useOpenai();
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Box sx={{ width: "100%" }}>
+      <Box component="h1">議事録デモ</Box>
+      <Button variant="contained" onClick={() => setIsRecording((cur) => !cur)}>
+        {isRecording ? "録音停止" : "録音開始"}
+      </Button>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        spacing={2}
+        sx={{ width: "100%" }}
+      >
+        <Seciton title="Web Speech API 原文" texts={rawTexts} />
+        <Seciton
+          title="Web Speech API 整形（GPT-3.5）"
+          texts={formattedTexts}
+        />
+        <Seciton title="議事録（GPT-4）" texts={[]} />
+      </Stack>
+    </Box>
+  );
 }
 
-export default App
+export default App;
